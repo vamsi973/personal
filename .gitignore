@@ -50,3 +50,6 @@ Thumbs.db
 .env.build
 
 .vercel
+
+
+/package-lock.json
