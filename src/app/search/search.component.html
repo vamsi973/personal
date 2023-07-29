@@ -1,0 +1,14 @@
+<!-- search-page.component.html -->
+<div id="container">
+    <div id="logo">
+        <!-- Replace this with Google's logo image -->
+        <!-- <img src="google_logo.png" alt="Google"> -->
+    </div>
+    <div id="search-form">
+        <form>
+            <input type="text" id="search-bar" name="q" placeholder="Search" (change)="dateFromObjectId($event)">
+            <button type="submit" id="search-btn">Search</button>
+        </form>
+    </div>
+</div>
+<p>{{date| date: 'short':'UTC'}}</p>

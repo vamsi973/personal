@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.css']
 })
-export class AppComponent {
-  title = 'personal';
+export class SearchComponent {
+  date:any;
   dateFromObjectId(objectId: any) {
     objectId = objectId.target.value;
     console.log(new Date(parseInt(objectId.substring(0, 8), 16) * 1000));
+    this.date = new Date(parseInt(objectId.substring(0, 8), 16) * 1000)
     return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
   };
 }
