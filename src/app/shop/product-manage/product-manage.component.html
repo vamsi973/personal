@@ -1,0 +1,293 @@
+<div class="product-manage-container">
+    <!-- Header Section -->
+    <div class="manage-header">
+        <h1>Product Management</h1>
+        <p>Manage your affiliate products and track performance</p>
+        <button class="add-product-btn" (click)="toggleForm()">
+            {{ showForm ? 'Cancel' : 'Add New Product' }}
+        </button>
+    </div>
+
+    <!-- Product Form -->
+    <div *ngIf="showForm" class="product-form-container">
+        <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="product-form">
+            <div class="form-header">
+                <h3>{{ editMode ? 'Edit Product' : 'Add New Product' }}</h3>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="title">Product Title *</label>
+                    <input 
+                        type="text" 
+                        id="title"
+                        name="title" 
+                        [(ngModel)]="product.title" 
+                        required 
+                        class="form-input"
+                        placeholder="Enter product title"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select 
+                        id="category"
+                        name="category" 
+                        [(ngModel)]="product.category" 
+                        required
+                        class="form-select"
+                    >
+                        <option value="">Select Category</option>
+                        <option *ngFor="let category of categories" [value]="category">
+                            {{category}}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price (₹) *</label>
+                    <input 
+                        type="number" 
+                        id="price"
+                        name="price" 
+                        [(ngModel)]="product.price" 
+                        required
+                        class="form-input"
+                        placeholder="0"
+                        min="0"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="originalPrice">Original Price (₹)</label>
+                    <input 
+                        type="number" 
+                        id="originalPrice"
+                        name="originalPrice" 
+                        [(ngModel)]="product.originalPrice" 
+                        class="form-input"
+                        placeholder="0"
+                        min="0"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="commission">Commission (%) *</label>
+                    <input 
+                        type="number" 
+                        id="commission"
+                        name="commission" 
+                        [(ngModel)]="product.commission" 
+                        required
+                        class="form-input"
+                        placeholder="10"
+                        min="0"
+                        max="100"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating</label>
+                    <input 
+                        type="number" 
+                        id="rating"
+                        name="rating" 
+                        [(ngModel)]="product.rating" 
+                        class="form-input"
+                        placeholder="0"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewCount">Review Count</label>
+                    <input 
+                        type="number" 
+                        id="reviewCount"
+                        name="reviewCount" 
+                        [(ngModel)]="product.reviewCount" 
+                        class="form-input"
+                        placeholder="0"
+                        min="0"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUrl">Image URL *</label>
+                    <input 
+                        type="url" 
+                        id="imageUrl"
+                        name="imageUrl" 
+                        [(ngModel)]="product.imageUrl" 
+                        required
+                        class="form-input"
+                        placeholder="https://example.com/image.jpg"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="affiliateLink">Affiliate Link *</label>
+                    <input 
+                        type="url" 
+                        id="affiliateLink"
+                        name="affiliateLink" 
+                        [(ngModel)]="product.affiliateLink" 
+                        required
+                        class="form-input"
+                        placeholder="https://affiliate.example.com/product?tid=123"
+                    />
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Description *</label>
+                    <textarea 
+                        id="description"
+                        name="description" 
+                        [(ngModel)]="product.description" 
+                        required
+                        class="form-textarea"
+                        placeholder="Enter detailed product description"
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Tags</label>
+                    <div class="tags-container">
+                        <div class="tags-input">
+                            <input 
+                                #tagInput
+                                type="text" 
+                                placeholder="Add a tag and press Enter"
+                                (keyup.enter)="addTag(tagInput.value); tagInput.value = ''"
+                                class="tag-input"
+                            />
+                        </div>
+                        <div class="tags-list">
+                            <span *ngFor="let tag of product.tags" class="tag-item">
+                                {{tag}}
+                                <button type="button" (click)="removeTag(tag)" class="remove-tag">×</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            name="inStock" 
+                            [(ngModel)]="product.inStock"
+                            class="form-checkbox"
+                        />
+                        In Stock
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" (click)="resetForm()" class="btn-secondary">
+                    Reset
+                </button>
+                <button type="submit" class="btn-primary">
+                    {{ editMode ? 'Update Product' : 'Add Product' }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="filters-section">
+        <div class="search-box">
+            <input 
+                type="text" 
+                placeholder="Search products..." 
+                [(ngModel)]="searchTerm"
+                class="search-input"
+            >
+        </div>
+        <div class="filter-controls">
+            <select [(ngModel)]="selectedCategory" class="filter-select">
+                <option value="">All Categories</option>
+                <option *ngFor="let category of categories" [value]="category">
+                    {{category}}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Products List -->
+    <div class="products-section">
+        <div class="section-header">
+            <h3>Products ({{ getFilteredProducts().length }})</h3>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading products...</p>
+        </div>
+
+        <!-- Products Grid -->
+        <div *ngIf="!loading" class="products-grid">
+            <div 
+                *ngFor="let product of getFilteredProducts(); let i = index" 
+                class="product-card"
+                [class.out-of-stock]="!product.inStock"
+            >
+                <div class="product-image-container">
+                    <img [src]="product.imageUrl" [alt]="product.title" class="product-image">
+                    <div *ngIf="!product.inStock" class="stock-badge out">Out of Stock</div>
+                    <div *ngIf="product.inStock" class="stock-badge in">In Stock</div>
+                </div>
+
+                <div class="product-info">
+                    <h4 class="product-title">{{product.title}}</h4>
+                    <p class="product-description">{{product.description}}</p>
+                    
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="label">Category:</span>
+                            <span class="value">{{product.category}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Price:</span>
+                            <span class="value price">₹{{product.price}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Commission:</span>
+                            <span class="value commission">{{product.commission}}%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Rating:</span>
+                            <span class="value rating">{{product.rating}}/5</span>
+                        </div>
+                    </div>
+
+                    <div class="product-tags">
+                        <span *ngFor="let tag of product.tags" class="tag">{{tag}}</span>
+                    </div>
+
+                    <div class="product-actions">
+                        <button (click)="editProduct(i)" class="btn-edit">Edit</button>
+                        <button (click)="duplicateProduct(product)" class="btn-duplicate">Duplicate</button>
+                        <button (click)="toggleStock(product)" class="btn-toggle-stock">
+                            {{product.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}}
+                        </button>
+                        <button (click)="deleteProduct(i)" class="btn-delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Products -->
+        <div *ngIf="!loading && getFilteredProducts().length === 0" class="no-products">
+            <div class="no-products-icon">📦</div>
+            <h3>No products found</h3>
+            <p>Start by adding your first affiliate product</p>
+        </div>
+    </div>
+</div>

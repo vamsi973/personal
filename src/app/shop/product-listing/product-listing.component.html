@@ -1,0 +1,170 @@
+<div class="shop-container">
+    <!-- Header Section -->
+    <div class="shop-header">
+        <h1>Affiliate Marketplace</h1>
+        <p>Discover amazing products and earn commissions on every sale</p>
+    </div>
+
+    <!-- Filters and Search Section -->
+    <div class="filters-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="search-icon">🔍</i>
+                <input 
+                    type="text" 
+                    placeholder="Search products..." 
+                    [(ngModel)]="searchTerm"
+                    (input)="onSearchChange()"
+                    class="search-input"
+                >
+            </div>
+        </div>
+
+        <div class="filters-row">
+            <div class="filter-group">
+                <label>Category:</label>
+                <select 
+                    [(ngModel)]="selectedCategory" 
+                    (change)="onCategoryChange()"
+                    class="filter-select"
+                >
+                    <option value="">All Categories</option>
+                    <option *ngFor="let category of categories" [value]="category">
+                        {{category}}
+                    </option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Price Range:</label>
+                <div class="price-range">
+                    <input 
+                        type="number" 
+                        [(ngModel)]="priceRange.min" 
+                        (change)="onPriceRangeChange()"
+                        placeholder="Min"
+                        class="price-input"
+                    >
+                    <span>-</span>
+                    <input 
+                        type="number" 
+                        [(ngModel)]="priceRange.max" 
+                        (change)="onPriceRangeChange()"
+                        placeholder="Max"
+                        class="price-input"
+                    >
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Sort By:</label>
+                <select 
+                    [(ngModel)]="sortBy" 
+                    (change)="onSortChange()"
+                    class="filter-select"
+                >
+                    <option value="relevance">Relevance</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="commission">Highest Commission</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading products...</p>
+    </div>
+
+    <!-- Results Summary -->
+    <div *ngIf="!loading" class="results-summary">
+        <p>{{filteredProducts.length}} products found</p>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!loading" class="products-grid">
+        <div 
+            *ngFor="let product of filteredProducts" 
+            class="product-card"
+            [class.out-of-stock]="!product.inStock"
+        >
+            <!-- Product Image -->
+            <div class="product-image-container">
+                <img [src]="product.imageUrl" [alt]="product.title" class="product-image">
+                
+                <!-- Stock Status Badge -->
+                <div *ngIf="!product.inStock" class="out-of-stock-badge">
+                    Out of Stock
+                </div>
+                
+                <!-- Discount Badge -->
+                <div *ngIf="product.originalPrice && product.originalPrice > product.price" 
+                     class="discount-badge">
+                    -{{getDiscountPercentage(product.originalPrice, product.price)}}%
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info">
+                <div class="product-header">
+                    <h3 class="product-title">{{product.title}}</h3>
+                    <div class="product-rating">
+                        <span class="stars">
+                            <span *ngFor="let star of [1,2,3,4,5]" 
+                                  [class.filled]="star <= product.rating"
+                                  class="star">★</span>
+                        </span>
+                        <span class="rating-text">({{product.reviewCount}})</span>
+                    </div>
+                </div>
+
+                <p class="product-description">{{product.description}}</p>
+
+                <!-- Tags -->
+                <div class="product-tags">
+                    <span *ngFor="let tag of product.tags" class="tag">{{tag}}</span>
+                </div>
+
+                <!-- Price Section -->
+                <div class="price-section">
+                    <div class="current-price">₹{{product.price}}</div>
+                    <div *ngIf="product.originalPrice && product.originalPrice > product.price" 
+                         class="original-price">₹{{product.originalPrice}}</div>
+                </div>
+
+                <!-- Commission Info -->
+                <div class="commission-info">
+                    <span class="commission-label">Commission:</span>
+                    <span class="commission-value">{{product.commission}}%</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="product-actions">
+                    <a 
+                        [href]="product.affiliateLink" 
+                        target="_blank" 
+                        class="buy-now-btn"
+                        (click)="trackAffiliateClick(product)"
+                        [class.disabled]="!product.inStock"
+                    >
+                        {{product.inStock ? 'Buy Now' : 'Out of Stock'}}
+                    </a>
+                    
+                    <button class="details-btn" (click)="showProductDetails(product)">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!loading && filteredProducts.length === 0" class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3>No products found</h3>
+        <p>Try adjusting your search criteria or filters</p>
+    </div>
+</div>

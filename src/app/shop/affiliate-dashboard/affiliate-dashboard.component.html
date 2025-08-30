@@ -1,0 +1,151 @@
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1>Affiliate Dashboard</h1>
+    <p>Track your performance and earnings</p>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="refreshStats()" [disabled]="loading">
+        <span class="icon">🔄</span>
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="export-btn" (click)="exportReport()">
+        <span class="icon">📊</span>
+        Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading affiliate statistics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Data</h3>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="refreshStats()">Try Again</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    <!-- Key Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">💰</div>
+        <div class="metric-content">
+          <h3>Total Earnings</h3>
+          <div class="metric-value">₹{{ getTotalEarnings() | number:'1.0-0' }}</div>
+          <div class="metric-change positive">+12.5% from last month</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">📦</div>
+        <div class="metric-content">
+          <h3>Total Products</h3>
+          <div class="metric-value">{{ stats?.totalProducts || 0 }}</div>
+          <div class="metric-change positive">+5 new this week</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">📈</div>
+        <div class="metric-content">
+          <h3>Avg Commission</h3>
+          <div class="metric-value">{{ getAverageCommission() | number:'1.1-1' }}%</div>
+          <div class="metric-change neutral">Stable</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-content">
+          <h3>Conversion Rate</h3>
+          <div class="metric-value">{{ getConversionRate() | number:'1.1-1' }}%</div>
+          <div class="metric-change positive">+2.1% from last week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="charts-section">
+      <div class="chart-container">
+        <h3>Monthly Commission Trend</h3>
+        <div class="chart-placeholder">
+          <div class="chart-bars">
+            <div *ngFor="let item of commissionChartData" class="chart-bar">
+              <div class="bar" [style.height.%]="(item.commission / 30000) * 100"></div>
+              <span class="bar-label">{{ item.month }}</span>
+              <span class="bar-value">₹{{ item.commission | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Category Performance</h3>
+        <div class="chart-placeholder">
+          <div class="category-stats">
+            <div *ngFor="let item of categoryChartData" class="category-item">
+              <div class="category-info">
+                <span class="category-name">{{ item.category }}</span>
+                <span class="category-products">{{ item.products }} products</span>
+              </div>
+              <div class="category-commission">
+                <span class="commission-percentage">{{ item.commission }}%</span>
+                <div class="commission-bar">
+                  <div class="commission-fill" [style.width.%]="item.commission"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Performance -->
+    <div class="today-performance">
+      <h3>Today's Performance</h3>
+      <div class="performance-grid">
+        <div class="performance-item">
+          <div class="performance-label">Clicks</div>
+          <div class="performance-value">{{ stats?.clicksToday || 0 }}</div>
+        </div>
+        <div class="performance-item">
+          <div class="performance-label">Conversions</div>
+          <div class="performance-value">{{ stats?.conversionsToday || 0 }}</div>
+        </div>
+        <div class="performance-item">
+          <div class="performance-label">Top Category</div>
+          <div class="performance-value">{{ stats?.topPerformingCategory || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Quick Actions</h3>
+      <div class="actions-grid">
+        <button class="action-btn">
+          <span class="action-icon">➕</span>
+          <span class="action-text">Add New Product</span>
+        </button>
+        <button class="action-btn">
+          <span class="action-icon">📊</span>
+          <span class="action-text">View Detailed Analytics</span>
+        </button>
+        <button class="action-btn">
+          <span class="action-icon">🔗</span>
+          <span class="action-text">Manage Affiliate Links</span>
+        </button>
+        <button class="action-btn">
+          <span class="action-icon">📧</span>
+          <span class="action-text">Contact Support</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
